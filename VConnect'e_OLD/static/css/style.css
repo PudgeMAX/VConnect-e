@@ -1,0 +1,28 @@
+.bg {
+	background-color: #151715;
+}
+
+.system {
+	color: #14A819;
+	font-family: Rostov;
+}
+
+.error {
+	color: #BF0808;
+	font-family: Rostov;
+}
+
+.big-container {
+	width: 40%;
+	font-size: 130%;
+	background: #666;
+	border: 15px solid #666;
+	font-family: Rostov;
+}
+
+@font-face {
+	font-family: "Rostov"; 
+	src: url("../fonts/Rostov.ttf") format("truetype"); 
+	font-style: normal; 
+	font-weight: normal; 
+}
