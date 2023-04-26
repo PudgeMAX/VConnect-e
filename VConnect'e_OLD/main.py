@@ -1,6 +1,6 @@
 import random
 import sqlite3
-from flask import Flask, render_template, jsonify, request, url_for, redirect, make_response, session
+from flask import Flask, request, url_for, redirect, make_response, session
 import datetime
 from config import secret_key
 
@@ -42,8 +42,8 @@ def session_test():
 
 @app.route('/', methods=["POST", "GET"])
 def index():
-    logged = session.get('logged', False)
-    cur_login = session.get('cur_login', '')
+    _ = session.get('logged', False)
+    _ = session.get('cur_login', '')
     session['logged'] = False
     session['cur_login'] = ''
     if session["logged"] is True:
@@ -56,7 +56,8 @@ def index():
                         <meta charset="utf-8">
                         <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
                         <link rel="stylesheet" type="text/css" href="{url_for('static', filename='css/style.css')}" />
-                        <link type="image/x-icon" href="{url_for('static', filename='img/favicon.ico')}" rel="shortcut icon">
+                        <link type="image/x-icon" href="{url_for('static', filename='img/favicon.ico')}" 
+                        rel="shortcut icon">
                         <link type="Image/x-icon" href="{url_for('static', filename='img/favicon.ico')}" rel="icon">
                         <title> VConnect'e </title>
                     </head>
@@ -67,13 +68,16 @@ def index():
                         
                         <form action="/login" style="text-align: center;" method="POST">
                             <p></p>
-                            <div><input type="text" size="20" class="system" name=login_temp style="font-size: 50%" placeholder="Логин"/></div>
-                            <div><input type="password" size="20" class="system" name=password_temp style="font-size: 50%" placeholder="Пароль"/></div>
+                            <div><input type="text" size="20" class="system" name=login_temp style="font-size: 50%" 
+                            placeholder="Логин"/></div>
+                            <div><input type="password" size="20" class="system" name=password_temp 
+                            style="font-size: 50%" placeholder="Пароль"/></div>
                             <input type="submit" id=process_input class="system" value=Войти style="font-size: 50%" />
                         </form>
                         
                         <form action="/register" style="text-align: center;" method="POST">
-                            <input type="submit" id=process_input class="system" value=Регистрация style="font-size: 50%" />
+                            <input type="submit" id=process_input class="system" value=Регистрация 
+                            style="font-size: 50%" />
                         </form>
                         <p class="error" style="text-align: center;"> {error} </p>
     
@@ -89,7 +93,9 @@ def handler():
     message = request.form['message']
     db = sqlite3.connect('chats.db')
     cur = sqlite3.Cursor(db)
-    ex = cur.execute(f'''INSERT INTO messages (message, chat_name, user, date) VALUES ("{message}", "{session['chat_name']}", "{session['cur_login']}", "{str(datetime.datetime.now())[:-6]}")''')
+    ex = cur.execute(
+        f'''INSERT INTO messages (message, chat_name, user, date) VALUES ("{message}", "{session['chat_name']}", 
+        "{session['cur_login']}", "{str(datetime.datetime.now())[:-6]}")''')
     db.commit()
     ex.close()
     cur.close()
@@ -105,13 +111,14 @@ def chat(chat_name):
     ex = cur.execute(f'''SELECT message, chat_name, user FROM messages''')
     content = []
     y_pos = 6
-    cur_chat_name = session.get('chat_name', chat_name)
+    _ = session.get('chat_name', chat_name)
     session['chat_name'] = chat_name
     for i in ex:
         if i[1] == chat_name and i[2] == session['cur_login']:
             content.append(
                 f'''
-                    <div style='color: #14A819; position: absolute; top: {y_pos}%; left: 52%' class="big-container">{i[2]}</div>
+                    <div style='color: #14A819; position: absolute; top: {y_pos}%; 
+                    left: 52%' class="big-container">{i[2]}</div>
                     <div style='position: absolute; top: {y_pos + 6}%; left: 52%' class="big-container">{i[0]}</div>
                  '''
             )
@@ -119,10 +126,11 @@ def chat(chat_name):
         elif i[1] == chat_name:
             content.append(
                 f'''
-                    <div style='color: #FF3B48; position: absolute; top: {y_pos}%; left: 12%' class="big-container">{i[2]}</div>
+                    <div style='color: #FF3B48; position: absolute; top: {y_pos}%; left: 12%' class="big-container">
+{i[2]}</div>
                     <div style='position: absolute; top: {y_pos + 6}%; left: 12%' class="big-container">{i[0]}</div>
                 '''
-                )
+            )
             y_pos += 25
     script__scroll = '''
             <script>
@@ -136,7 +144,8 @@ def chat(chat_name):
         f'''
             <br>
             <form action="/handler" method="POST">
-                <input type="text" class="system" name=message style="font-size: 200%; width: 1450px; height: 50px; position: absolute; top: {y_pos + 25}%" placeholder=""/>
+                <input type="text" class="system" name=message style="font-size: 200%; width: 1450px; height: 50px; 
+                position: absolute; top: {y_pos + 25}%" placeholder=""/>
             </form>
         '''
     )
@@ -158,8 +167,10 @@ def chat(chat_name):
             <body class="bg">
                 <a href='/main' class="system" style="font-size: 250%"> VConnect'e </a>
                 {''.join(content)}
-                <a href='/main' class="system" style="font-size: 250%; position: absolute; top: {y_pos + 25}%; left: 85%"> VConnect'e </a>
-                <a href='/generate_link' class="system" style="font-size: 250%; position: absolute; top: {y_pos + 20}%; left: 3%"> Пригласить </a>
+                <a href='/main' class="system" style="font-size: 250%; position: absolute; top: {y_pos + 25}%;
+                 left: 85%"> VConnect'e </a>
+                <a href='/generate_link' class="system" style="font-size: 250%; position: absolute; top: {y_pos + 20}%;
+                 left: 3%"> Пригласить </a>
             </body>
         </html> 
     '''
@@ -172,7 +183,8 @@ def accept_action():
         chat_name = request.form['name_chat']
         db = sqlite3.connect('chats.db')
         cur = sqlite3.Cursor(db)
-        ex = cur.execute(f'''INSERT INTO chats (chat_name, user_member) VALUES ("{chat_name}", "{session['cur_login']}")''')
+        ex = cur.execute(
+            f'''INSERT INTO chats (chat_name, user_member) VALUES ("{chat_name}", "{session['cur_login']}")''')
         db.commit()
         chat_data = cur.execute(f'''SELECT chat_name, user_member FROM chats''').fetchall()
         ex.close()
@@ -193,7 +205,8 @@ def generate_link():
         ex = cur.execute(f'''SELECT chat_name FROM chats''')
         for i in ex:
             if i[0] == session['chat_name']:
-                exe = cur.execute(f'''UPDATE chats SET chat_key = "{''.join(link)}" WHERE chat_name = "{session['chat_name']}"''')
+                _ = cur.execute(
+                    f'''UPDATE chats SET chat_key = "{''.join(link)}" WHERE chat_name = "{session['chat_name']}"''')
                 db.commit()
         ex.close()
         cur.close()
@@ -206,17 +219,21 @@ def generate_link():
                         <meta charset="utf-8">
                         <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
                         <link rel="stylesheet" type="text/css" href="{url_for('static', filename='css/style.css')}" />
-                        <link type="image/x-icon" href="{url_for('static', filename='img/favicon.ico')}" rel="shortcut icon">
+                        <link type="image/x-icon" href="{url_for('static', filename='img/favicon.ico')}" rel="shortcut 
+                        icon">
                         <link type="Image/x-icon" href="{url_for('static', filename='img/favicon.ico')}" rel="icon">
                         <title> VConnect'e </title>
                     </head>
 
                     <body class="bg">
                         <a href='/main' class="system" style="font-size: 250%"> VConnect'e </a>
-                        <div style='background: #666; width: 80%; height: 87%; position: absolute; top: 7%; left: 10%' id="rectangle">
+                        <div style='background: #666; width: 80%; height: 87%; position: absolute; top: 7%; left: 10%'
+                         id="rectangle">
                             <form action="/generation" method="POST">
-                                <div class="system" style="font-size: 150%; width: 500px; height: 30px; position: absolute; top: 15%; left: 32%">https://longe.serveo.net/invite/{''.join(link)}</div>
-                                <input type="submit" id=process_input class="system" value="Сгенерировать ссылку" style="font-size: 250%; position: absolute; top: 25%; left: 35%" />
+                                <div class="system" style="font-size: 150%; width: 500px; height: 30px; position: 
+                                absolute; top: 15%; left: 32%">https://longe.serveo.net/invite/{''.join(link)}</div>
+                                <input type="submit" id=process_input class="system" value="Сгенерировать ссылку" 
+                                style="font-size: 250%; position: absolute; top: 25%; left: 35%" />
                             </form>
                         </div>
                     </body>
@@ -244,17 +261,21 @@ def create_chat():
                         <meta charset="utf-8">
                         <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
                         <link rel="stylesheet" type="text/css" href="{url_for('static', filename='css/style.css')}" />
-                        <link type="image/x-icon" href="{url_for('static', filename='img/favicon.ico')}" rel="shortcut icon">
+                        <link type="image/x-icon" href="{url_for('static', filename='img/favicon.ico')}" rel="shortcut 
+                        icon">
                         <link type="Image/x-icon" href="{url_for('static', filename='img/favicon.ico')}" rel="icon">
                         <title> VConnect'e </title>
                     </head>
 
                     <body class="bg">
                         <a href='/main' class="system" style="font-size: 250%"> VConnect'e </a>
-                        <div style='background: #666; width: 80%; height: 87%; position: absolute; top: 7%; left: 10%' id="rectangle">
+                        <div style='background: #666; width: 80%; height: 87%; position: absolute; top: 7%; left: 10%' 
+                        id="rectangle">
                             <form action="/accept_action" method="POST">
-                                <input type="text" class="system" name=name_chat style="font-size: 150%; width: 500px; height: 30px; position: absolute; top: 15%; left: 34%" placeholder="Название беседы"/>
-                                <input type="submit" id=process_input class="system" value="Подтвердить" style="font-size: 250%; position: absolute; top: 25%; left: 42%" />
+                                <input type="text" class="system" name=name_chat style="font-size: 150%; width: 500px; 
+                                height: 30px; position: absolute; top: 15%; left: 34%" placeholder="Название беседы"/>
+                                <input type="submit" id=process_input class="system" value="Подтвердить" 
+                                style="font-size: 250%; position: absolute; top: 25%; left: 42%" />
                             </form>
                             
                         </div>
@@ -266,19 +287,17 @@ def create_chat():
 @app.route('/invite/<link>', methods=["POST", "GET"])
 def invite(link):
     global db, cur
-    if session["logged"] is not True:
-        return redirect('/')
-    else:
-        db = sqlite3.connect('chats.db')
-        cur = sqlite3.Cursor(db)
-        ex = cur.execute('''SELECT chat_name, chat_key FROM chats''')
-        for i in ex:
-            if link == i[1]:
-                exe = cur.execute(f'''INSERT INTO chats (chat_name, user_member) VALUES ("{i[0]}", "{session['cur_login']}")''')
-                db.commit()
-        ex.close()
-        cur.close()
-        db.close()
+    db = sqlite3.connect('chats.db')
+    cur = sqlite3.Cursor(db)
+    ex = cur.execute('''SELECT chat_name, chat_key FROM chats''')
+    for i in ex:
+        if link == i[1]:
+            _ = cur.execute(
+                f'''INSERT INTO chats (chat_name, user_member) VALUES ("{i[0]}", "{session['cur_login']}")''')
+            db.commit()
+    ex.close()
+    cur.close()
+    db.close()
     return redirect('/main')
 
 
@@ -293,7 +312,8 @@ def main():
             if session['cur_login'] == i[1]:
                 list_of_dependences.append(f'''
                     <form action="/chat/{i[0]}" method="POST">
-                        <input type="submit" id=process_input class="system" value="{i[0]}" style="font-size: 200%; position: absolute; top: {y_percent}%; left: 12%" />
+                        <input type="submit" id=process_input class="system" 
+                        value="{i[0]}" style="font-size: 200%; position: absolute; top: {y_percent}%; left: 12%" />
                     </form>
                 ''')
                 y_percent += 10
@@ -305,19 +325,23 @@ def main():
                         <meta charset="utf-8">
                         <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
                         <link rel="stylesheet" type="text/css" href="{url_for('static', filename='css/style.css')}" />
-                        <link type="image/x-icon" href="{url_for('static', filename='img/favicon.ico')}" rel="shortcut icon">
+                        <link type="image/x-icon" href="{url_for('static', filename='img/favicon.ico')}" 
+                        rel="shortcut icon">
                         <link type="Image/x-icon" href="{url_for('static', filename='img/favicon.ico')}" rel="icon">
                         <title> VConnect'e </title>
                     </head>
     
                     <body class="bg">
                         <a href='/main' class="system" style="font-size: 250%"> VConnect'e </a>
-                        <div id="rectangle" class="big-container" style="width: 80%; height: 80%; position: absolute; top: 7%; left: 10%;"></div>
+                        <div id="rectangle" class="big-container" style="width: 80%; height: 80%; position: absolute; 
+                        top: 7%; left: 10%;"></div>
                         <form action="/logout" method="POST">
-                            <input type="submit" id=process_input class="system" value="Выйти из аккаунта" style="font-size: 100%; position: absolute; top: 2%; left: 91%" />
+                            <input type="submit" id=process_input class="system" value="Выйти из аккаунта" 
+                            style="font-size: 100%; position: absolute; top: 2%; left: 91%" />
                         </form>
                         <form action="/create_chat" method="POST">
-                            <input type="image" src="/static/img/add.webp" alt="Кнопка «input»" id=process_input class="system" style="width: 75px; height: 75px; position: absolute; top: 10%; left: 85%" />
+                            <input type="image" src="/static/img/add.webp" alt="Кнопка «input»" id=process_input 
+                            class="system" style="width: 75px; height: 75px; position: absolute; top: 10%; left: 85%" />
                         </form>
                         {''.join(list_of_dependences)}
                     </body>
@@ -346,8 +370,8 @@ def check_valid():
         db.commit()
         data = cur.execute(f'''SELECT user, pwd FROM users''').fetchall()
         ex.close()
-        logged = session.get('logged', True)
-        cur_login = session.get('cur_login', login_name)
+        _ = session.get('logged', True)
+        _ = session.get('cur_login', login_name)
         session['logged'] = True
         session['cur_login'] = login_name
         return redirect('/main')
@@ -374,8 +398,8 @@ def login():
                 if str(i[0]) == login_name:
                     if str(i[1]) == password_name:
                         error = ''
-                        logged = session.get('logged', True)
-                        cur_login = session.get('cur_login', login_name)
+                        _ = session.get('logged', True)
+                        _ = session.get('cur_login', login_name)
                         session['logged'] = True
                         session['cur_login'] = login_name
                         return redirect('/main')
@@ -400,7 +424,8 @@ def register():
                     <meta charset="utf-8">
                     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
                     <link rel="stylesheet" type="text/css" href="{url_for('static', filename='css/style.css')}" />
-                    <link type="image/x-icon" href="{url_for('static', filename='img/favicon.ico')}" rel="shortcut icon">
+                    <link type="image/x-icon" href="{url_for('static', filename='img/favicon.ico')}" 
+                    rel="shortcut icon">
                     <link type="Image/x-icon" href="{url_for('static', filename='img/favicon.ico')}" rel="icon">
                     <title> VConnect'e </title>
                 </head>
@@ -411,14 +436,18 @@ def register():
                     
                     <form action="/check_valid" style="text-align: center;" method="POST">
                         <p></p>
-                        <div><input type="text" size="20" class="system" name=login_temp style="font-size: 50%" placeholder="Имя пользователя"/></div>
-                        <div><input type="password" size="20" class="system" name=password_temp style="font-size: 50%" placeholder="Пароль"/></div>
-                        <div><input type="password" size="20" class="system" name=password_temp_conf style="font-size: 50%" placeholder="Подтвердите пароль"/></div>
+                        <div><input type="text" size="20" class="system" name=login_temp style="font-size: 50%"
+                         placeholder="Имя пользователя"/></div>
+                        <div><input type="password" size="20" class="system" name=password_temp style="font-size: 50%"
+                         placeholder="Пароль"/></div>
+                        <div><input type="password" size="20" class="system" name=password_temp_conf 
+                        style="font-size: 50%" placeholder="Подтвердите пароль"/></div>
                         <input type="submit" value=Зарегистрироваться class="system" style="font-size: 50%" />
                     </form>
                     
                     <form action="/" method="POST">
-                        <input type="submit" id=process_input class="system" value="Уже есть аккаунт" style="font-size: 25%" />
+                        <input type="submit" id=process_input class="system" value="Уже есть аккаунт" 
+                        style="font-size: 25%" />
                     </form>
                     
                     <p class="error" style="text-align: center;"> {error} </p>
